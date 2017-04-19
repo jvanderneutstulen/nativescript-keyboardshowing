@@ -10,23 +10,16 @@
 
 
 var frame = require('ui/frame');
+var getInputMethodManager = require("utils/utils").ad.getInputMethodManager;
 
 function trackAndroidKeyboard() {
     if (!frame.topmost()) { setTimeout(trackAndroidKeyboard, 100); return; }
     if (!frame.topmost().currentPage) { setTimeout(trackAndroidKeyboard, 100); return; }
 
     var cv = frame.topmost().currentPage.android;
-
     cv.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener({
         onGlobalLayout: function () {
-            // Grab the Current Screen Height
-            var rect = new android.graphics.Rect();
-            cv.getWindowVisibleDisplayFrame(rect);
-            var screenHeight = cv.getRootView().getHeight();
-            var missingSize = screenHeight-rect.bottom;
-
-
-            if (missingSize > (screenHeight * 0.15)) {
+            if (getInputMethodManager().isAcceptingText()) {
                 notifyKeyboard(true);
             } else {
                 notifyKeyboard(false);
